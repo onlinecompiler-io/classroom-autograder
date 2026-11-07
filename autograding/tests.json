@@ -1,0 +1,14 @@
+{
+  "title": "Shout",
+  "compiler": "python-3.14",
+  "file": "solution.py",
+  "checker": "trim",
+  "time_limit": 2,
+  "pass_mark": 70,
+  "tests": [
+    {"name": "lowercase word", "input": "hello\n", "expected_output": "HELLO\n", "weight": 2},
+    {"name": "sentence with punctuation", "input": "Hello, World\n", "expected_output": "HELLO, WORLD\n", "weight": 3},
+    {"name": "already loud", "input": "ok\n", "expected_output": "OK\n", "weight": 2},
+    {"name": "hidden: digits and symbols", "input": "abc 123 !?\n", "expected_output": "ABC 123 !?\n", "weight": 3, "hidden": true}
+  ]
+}

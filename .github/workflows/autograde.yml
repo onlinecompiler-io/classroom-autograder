@@ -1,0 +1,36 @@
+name: Autograde
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  grade:
+    # The template repository itself has no student code and no secret, so it skips.
+    if: ${{ !github.event.repository.is_template }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Check the API key is available
+        env:
+          ONLINECOMPILER_API_KEY: ${{ secrets.ONLINECOMPILER_API_KEY }}
+        run: |
+          if [ -z "$ONLINECOMPILER_API_KEY" ]; then
+            echo "::error title=Missing secret::ONLINECOMPILER_API_KEY is not available to this repository. Ask your teacher to add it as an organization secret that this repository can read. Pull requests from forks never receive secrets."
+            echo "## Could not grade" >> "$GITHUB_STEP_SUMMARY"
+            echo "The secret ONLINECOMPILER_API_KEY is not available to this repository. Ask your teacher to add it." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+      - name: Install the client
+        run: pip install -r autograding/requirements.txt
+      - name: Grade the solution
+        env:
+          ONLINECOMPILER_API_KEY: ${{ secrets.ONLINECOMPILER_API_KEY }}
+        run: python autograding/grade.py
