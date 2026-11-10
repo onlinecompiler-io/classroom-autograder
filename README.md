@@ -79,7 +79,7 @@ The workflow reads a secret named `ONLINECOMPILER_API_KEY`. Student repositories
 |---|---|
 | `compiler` | The language id, for example `python-3.14`. |
 | `file` | The student's file in the repo, sent as the program. |
-| `checker` | How output is compared: `trim` (ignores trailing whitespace, the default), `exact`, `tokens` (ignores all whitespace differences), `float` (numbers within `tolerance`) or `rows` (lines as an unordered set). |
+| `checker` | How output is compared: `trim` (ignores trailing whitespace, the default), `exact`, `tokens` (ignores all whitespace differences), `float` (numbers within `tolerance`), `rows` (lines as an unordered set), `table` (CSV tables with a header row compared by column name, rows in any order) or `table_ordered` (the same, rows in order). |
 | `time_limit` | Seconds per test, above 0 and up to 30 (default 2). |
 | `pass_mark` | The score (0 to 100) needed for the check to pass (default 100). |
 | `tolerance` | Optional, for the `float` checker. |

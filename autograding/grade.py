@@ -22,7 +22,7 @@ from typing import Any, Callable
 
 KEY_URL = ("https://api.onlinecompiler.io/compilers/api-keys/"
            "?utm_source=github&utm_medium=repo&utm_campaign=classroom-autograder")
-CHECKERS = ("trim", "exact", "tokens", "float", "rows")
+CHECKERS = ("trim", "exact", "tokens", "float", "rows", "table", "table_ordered")
 SNIPPET = 200
 DEFAULT_CONFIG = Path(__file__).resolve().parent / "tests.json"
 
