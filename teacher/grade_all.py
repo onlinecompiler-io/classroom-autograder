@@ -71,8 +71,17 @@ def fetch_submission(org: str, repo: str, path: str, run: Callable[..., str] = g
 def local_submissions(directory: Path, path: str) -> list[dict[str, Any]]:
     if not directory.is_dir():
         raise RuntimeError(f"{directory} is not a folder")
-    return [{"name": d.name, "path": d / path} for d in sorted(directory.iterdir())
+    return [{"name": d.name, "folder": d, "path": d / path} for d in sorted(directory.iterdir())
             if d.is_dir() and not d.name.startswith(".")]
+
+
+def read_local(folder: Path, file: Path) -> str:
+    """The student's file from a cloned repository. A repository can hold a link in place of the
+    file, pointing at a classmate's answer in the next folder or at a file of the teacher's, so a
+    file that leads out of the student's own folder is refused."""
+    if not file.resolve().is_relative_to(folder.resolve()):
+        raise grader.GradeError(f"The student file {file} is a link to a file outside the repository")
+    return grader.read_code(file)
 
 
 def student_of(repo: str, prefix: str) -> str:
@@ -165,7 +174,7 @@ def main(argv: list[str] | None = None, client: Any = None, run: Callable[..., s
         if args.local:
             repo = student = entry["name"]
             try:
-                code = grader.read_code(entry["path"])
+                code = read_local(entry["folder"], entry["path"])
             except grader.GradeError as problem:
                 error = str(problem)
         else:

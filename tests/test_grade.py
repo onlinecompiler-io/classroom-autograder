@@ -235,6 +235,25 @@ class GradeAllTests(unittest.TestCase):
             self.assertIn("not found", rows[2]["error"])
             self.assertEqual(len(client.calls), 2)
 
+    def test_local_mode_refuses_a_link_out_of_the_student_folder(self):
+        with tempfile.TemporaryDirectory() as folder:
+            for name in ("ada", "bob", "eve"):
+                Path(folder, name).mkdir()
+            Path(folder, "ada", "solution.py").write_text("ok")
+            Path(folder, "bob", "solution.py").symlink_to(Path("..", "ada", "solution.py"))
+            Path(folder, "eve", "real.py").write_text("ok")
+            Path(folder, "eve", "solution.py").symlink_to("real.py")  # a link inside the repo is the student's own file
+            out = Path(folder, "grades.csv")
+            client = FakeClient(result(100, ["accepted", "accepted"]), result(100, ["accepted", "accepted"]))
+            config = Path(folder, "tests.json")
+            config.write_text(json.dumps(CONFIG))
+            grade_all.main(["--local", folder, "--config", str(config), "--out", str(out), "--pause", "0"],
+                           client=client)
+            rows = list(csv.DictReader(open(out)))
+            self.assertEqual([r["score"] for r in rows], ["100", "", "100"])
+            self.assertIn("outside the repository", rows[1]["error"])
+            self.assertEqual(len(client.calls), 2)
+
 
 if __name__ == "__main__":
     unittest.main()
